@@ -2,7 +2,7 @@ package http
 
 import (
 	"fmt"
-	"github.com/open-falcon/agent/funcs"
+	"../funcs"
 	"github.com/toolkits/nux"
 	"net/http"
 	"runtime"
