@@ -1,4 +1,4 @@
-falcon-agent
+falcon-agent for mac
 ===
 
 This is a mac monitor agent. Just like zabbix-agent and tcollector.
