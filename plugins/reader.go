@@ -1,7 +1,7 @@
 package plugins
 
 import (
-	"github.com/open-falcon/agent/g"
+	"../g"
 	"github.com/toolkits/file"
 	"io/ioutil"
 	"log"
