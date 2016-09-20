@@ -21,6 +21,7 @@ cd ..
 git clone https://github.com/GitHamburg/agent-mac.git
 cd agent-mac
 ./control build
+#注意在cfg.json中的hostname/ip,设置本机ip地址;在addr处,加入服务端ip地址
 ./falcon-agent start -c cfg.json
 
 # goto http://localhost:1988
