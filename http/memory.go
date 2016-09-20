@@ -1,36 +1,38 @@
 package http
 
 import (
-	"github.com/toolkits/nux"
 	"net/http"
+	"../tools/mem"
 )
 
 func configMemoryRoutes() {
 	http.HandleFunc("/page/memory", func(w http.ResponseWriter, r *http.Request) {
-		mem, err := nux.MemInfo()
+		m, err := mem.VirtualMemory()
+
 		if err != nil {
 			RenderMsgJson(w, err.Error())
 			return
 		}
 
-		memFree := mem.MemFree + mem.Buffers + mem.Cached
-		memUsed := mem.MemTotal - memFree
+		memFree := m.Free + m.Buffers + m.Cached
+		memUsed := m.Total - memFree
 		var t uint64 = 1024 * 1024
-		RenderDataJson(w, []interface{}{mem.MemTotal / t, memUsed / t, memFree / t})
+		RenderDataJson(w, []interface{}{m.Total / t, memUsed / t, memFree / t})
 	})
 
 	http.HandleFunc("/proc/memory", func(w http.ResponseWriter, r *http.Request) {
-		mem, err := nux.MemInfo()
+		m, err := mem.VirtualMemory()
+
 		if err != nil {
 			RenderMsgJson(w, err.Error())
 			return
 		}
 
-		memFree := mem.MemFree + mem.Buffers + mem.Cached
-		memUsed := mem.MemTotal - memFree
+		memFree := m.Free + m.Buffers + m.Cached
+		memUsed := m.Total - memFree
 
 		RenderDataJson(w, map[string]interface{}{
-			"total": mem.MemTotal,
+			"total": m.Total,
 			"free":  memFree,
 			"used":  memUsed,
 		})
