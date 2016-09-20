@@ -84,6 +84,31 @@ func uptime(boot uint64) uint64 {
 	return uint64(time.Now().Unix()) - boot
 }
 
+func SystemUptime() (days, hours, mins int64, err error) {
+	var  up_time uint64
+	up_time, err = Uptime()
+	if err != nil {
+		return
+	}
+
+
+	secStr := strconv.FormatInt(int64(up_time), 10)
+	var secF float64
+	secF, err = strconv.ParseFloat(secStr, 64)
+	if err != nil {
+		return
+	}
+
+	minTotal := secF / 60.0
+	hourTotal := minTotal / 60.0
+
+	days = int64(hourTotal / 24.0)
+	hours = int64(hourTotal) - days*24
+	mins = int64(minTotal) - (days * 60 * 24) - (hours * 60)
+
+	return
+}
+
 func Uptime() (uint64, error) {
 	boot, err := BootTime()
 	if err != nil {
