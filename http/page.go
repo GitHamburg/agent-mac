@@ -1,7 +1,7 @@
 package http
 
 import (
-	"github.com/open-falcon/agent/g"
+	"../g"
 	"github.com/toolkits/file"
 	"net/http"
 	"path/filepath"
@@ -9,7 +9,6 @@ import (
 )
 
 func configPageRoutes() {
-
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if strings.HasSuffix(r.URL.Path, "/") {
 			if !file.IsExist(filepath.Join(g.Root, "/public", r.URL.Path, "index.html")) {
