@@ -1,0 +1,34 @@
+{
+    "debug": false,
+    "hostname": "",
+    "ip": "",
+    "plugin": {
+        "enabled": true,
+        "dir": "./plugin",
+        "git": "",
+        "logs": "./logs"
+    },
+    "heartbeat": {
+        "enabled": true,
+        "addr": ":6030",
+        "interval": 60,
+        "timeout": 1000
+    },
+    "transfer": {
+        "enabled": true,
+        "addr": [":8433"],
+        "interval": 60,
+        "timeout": 1000
+    },
+    "http": {
+        "enabled": true,
+        "listen": "127.0.0.1:1988",
+        "backdoor": false
+    },
+    "collector": {
+        "ifacePrefix": ["eth", "em"]
+    },
+    "ignore": {
+        "cpu.busy": true
+    }
+}
