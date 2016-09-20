@@ -3,36 +3,47 @@ package http
 import (
 	"fmt"
 	"github.com/toolkits/core"
-	"github.com/toolkits/nux"
 	"net/http"
+	"log"
+	"../tools/disk"
 )
 
 func configDfRoutes() {
 	http.HandleFunc("/page/df", func(w http.ResponseWriter, r *http.Request) {
-		mountPoints, err := nux.ListMountPoint()
+		var diskTotal uint64 = 0
+		var diskUsed uint64 = 0
+
+		var mountPoints, err = disk.Partitions(false)
 		if err != nil {
 			RenderMsgJson(w, err.Error())
 			return
 		}
 
 		var ret [][]interface{} = make([][]interface{}, 0)
-		for idx := range mountPoints {
-			var du *nux.DeviceUsage
-			du, err = nux.BuildDeviceUsage(mountPoints[idx][0], mountPoints[idx][1], mountPoints[idx][2])
+		for _, ds := range mountPoints {
+
+			var dusage, err = disk.Usage(ds.Mountpoint)
+			if err != nil {
+				log.Println(err)
+			}
+
+			diskTotal += dusage.Total
+			diskUsed += dusage.Used
+
 			if err == nil {
 				ret = append(ret,
 					[]interface{}{
-						du.FsSpec,
-						core.ReadableSize(float64(du.BlocksAll)),
-						core.ReadableSize(float64(du.BlocksUsed)),
-						core.ReadableSize(float64(du.BlocksFree)),
-						fmt.Sprintf("%.1f%%", du.BlocksUsedPercent),
-						du.FsFile,
-						core.ReadableSize(float64(du.InodesAll)),
-						core.ReadableSize(float64(du.InodesUsed)),
-						core.ReadableSize(float64(du.InodesFree)),
-						fmt.Sprintf("%.1f%%", du.InodesUsedPercent),
-						du.FsVfstype,
+						dusage.Fstype,
+						core.ReadableSize(float64(dusage.Total)),
+						core.ReadableSize(float64(dusage.Used)),
+						core.ReadableSize(float64(dusage.Free)),
+						fmt.Sprintf("%.1f%%", dusage.UsedPercent),
+						ds.Mountpoint,
+						core.ReadableSize(float64(dusage.InodesTotal)),
+						core.ReadableSize(float64(dusage.InodesUsed)),
+						core.ReadableSize(float64(dusage.InodesFree)),
+						fmt.Sprintf("%.1f%%", dusage.InodesUsedPercent),
+						ds.Fstype,
 					})
 			}
 		}
