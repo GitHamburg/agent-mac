@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"runtime"
 	"time"
+	"../tools/host"
 )
 
 func configSystemRoutes() {
@@ -15,12 +16,12 @@ func configSystemRoutes() {
 	})
 
 	http.HandleFunc("/page/system/uptime", func(w http.ResponseWriter, req *http.Request) {
-		days, hours, mins, err := nux.SystemUptime()
+		days, hours, mins, err := host.SystemUptime()
 		AutoRender(w, fmt.Sprintf("%d days %d hours %d minutes", days, hours, mins), err)
 	})
 
 	http.HandleFunc("/proc/system/uptime", func(w http.ResponseWriter, req *http.Request) {
-		days, hours, mins, err := nux.SystemUptime()
+		days, hours, mins, err := host.SystemUptime()
 		if err != nil {
 			RenderMsgJson(w, err.Error())
 			return
