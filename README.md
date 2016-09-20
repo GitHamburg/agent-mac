@@ -10,13 +10,11 @@ It is a golang classic project
 
 ```bash
 # set $GOPATH and $GOROOT
-mkdir -p $GOPATH/src/github.com/open-falcon
-cd $GOPATH/src/github.com/open-falcon
-git clone https://github.com/open-falcon/agent.git
-cd agent
-go get ./...
+
+git clone https://github.com/GitHamburg/agent-mac.git
+cd agent-mac
 ./control build
-./control start
+./agent-mac start -c cfg.json
 
 # goto http://localhost:1988
 ```
