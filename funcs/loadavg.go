@@ -3,7 +3,7 @@ package funcs
 import (
 	"github.com/open-falcon/common/model"
 	"log"
-	"github.com/shirou/gopsutil/load"
+	"../tools/load"
 )
 
 func LoadAvgMetrics() []*model.MetricValue {
