@@ -1,7 +1,7 @@
 falcon-agent
 ===
 
-This is a linux monitor agent. Just like zabbix-agent and tcollector.
+This is a mac monitor agent. Just like zabbix-agent and tcollector.
 
 
 ## Installation
