@@ -15,7 +15,7 @@ cd $GOPATH/src/github.com/open-falcon
 git clone https://github.com/open-falcon/common.git
 cd ..
 #https://github.com/toolkits
-#toolkits放入$GOPATH/src/github.com目录
+#toolkits放入$GOPATH/src/github.com目录(https://github.com/GitHamburg/agent-mac/blob/master/resources/toolkits.tar)
 
 #set agent-mac
 git clone https://github.com/GitHamburg/agent-mac.git
