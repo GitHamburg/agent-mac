@@ -3,7 +3,7 @@ package plugins
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/open-falcon/agent/g"
+	"../g"
 	"github.com/open-falcon/common/model"
 	"github.com/toolkits/file"
 	"github.com/toolkits/sys"
