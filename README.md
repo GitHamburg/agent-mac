@@ -18,6 +18,7 @@ cd ..
 #toolkits放入$GOPATH/src/github.com目录(https://github.com/GitHamburg/agent-mac/blob/master/resources/toolkits.tar)
 
 #set agent-mac
+#把agent-mac放在非gopath路径下,否则会报:local import "./cron" in non-local package异常
 git clone https://github.com/GitHamburg/agent-mac.git
 cd agent-mac
 ./control build
