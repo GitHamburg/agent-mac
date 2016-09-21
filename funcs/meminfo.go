@@ -13,6 +13,12 @@ func MemMetrics() []*model.MetricValue {
 		return nil
 	}
 
+	sm, err := mem.SwapMemory()
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+
 	memFree := m.Free + m.Buffers + m.Cached
 	memUsed := m.Total - memFree
 
@@ -23,24 +29,24 @@ func MemMetrics() []*model.MetricValue {
 		pmemUsed = float64(memUsed) * 100.0 / float64(m.Total)
 	}
 
-	//pswapFree := 0.0
-	//pswapUsed := 0.0
-	//if m.SwapTotal != 0 {
-	//	pswapFree = float64(m.SwapFree) * 100.0 / float64(m.SwapTotal)
-	//	pswapUsed = float64(m.SwapUsed) * 100.0 / float64(m.SwapTotal)
-	//}
+	pswapFree := 0.0
+	pswapUsed := 0.0
+	if sm.Total != 0 {
+		pswapFree = float64(sm.Free) * 100.0 / float64(sm.Total)
+		pswapUsed = float64(sm.Used) * 100.0 / float64(sm.Total)
+	}
 
 	return []*model.MetricValue{
 		GaugeValue("mem.memtotal", m.Total),
 		GaugeValue("mem.memused", memUsed),
 		GaugeValue("mem.memfree", memFree),
-		//GaugeValue("mem.swaptotal", m.SwapTotal),
-		//GaugeValue("mem.swapused", m.SwapUsed),
-		//GaugeValue("mem.swapfree", m.SwapFree),
+		GaugeValue("mem.swaptotal", sm.Total),
+		GaugeValue("mem.swapused", sm.Used),
+		GaugeValue("mem.swapfree", sm.Free),
 		GaugeValue("mem.memfree.percent", pmemFree),
 		GaugeValue("mem.memused.percent", pmemUsed),
-		//GaugeValue("mem.swapfree.percent", pswapFree),
-		//GaugeValue("mem.swapused.percent", pswapUsed),
+		GaugeValue("mem.swapfree.percent", pswapFree),
+		GaugeValue("mem.swapused.percent", pswapUsed),
 	}
 
 }
