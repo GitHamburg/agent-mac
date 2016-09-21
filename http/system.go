@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"runtime"
 	"time"
-	"../tools/host"
 	"../tools/load"
+	"../tools/host"
 )
 
 func configSystemRoutes() {
@@ -15,9 +15,16 @@ func configSystemRoutes() {
 		RenderDataJson(w, time.Now().Format("2006-01-02 15:04:05"))
 	})
 
+	http.HandleFunc("/system/osname", func(w http.ResponseWriter, req *http.Request) {
+		hostname, err := host.Info()
+		if err == nil {
+			RenderDataJson(w,hostname.OS)
+		}
+	})
+
 	http.HandleFunc("/page/system/uptime", func(w http.ResponseWriter, req *http.Request) {
 		days, hours, mins, err := host.SystemUptime()
-		AutoRender(w, fmt.Sprintf("%d days %d hours %d minutes", days, hours, mins), err)
+		AutoRender(w, fmt.Sprintf("%d ds %d hs %d ms", days, hours, mins), err)
 	})
 
 	http.HandleFunc("/proc/system/uptime", func(w http.ResponseWriter, req *http.Request) {
