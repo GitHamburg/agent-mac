@@ -16,6 +16,9 @@ import (
 
 	"../common"
 	"../process"
+	"log"
+	"regexp"
+	"errors"
 )
 
 // from utmpx.h
@@ -198,4 +201,35 @@ func Virtualization() (string, string, error) {
 	role := ""
 
 	return system, role, nil
+}
+
+func Cmdexec(command string) (string,error) {
+	cmd := exec.Command("/bin/sh", "-c", command) //调用Command函数
+	var out bytes.Buffer //缓冲字节
+	cmd.Stdout = &out //标准输出
+	err := cmd.Run() //运行指令 ，做判断
+	if err != nil {
+		return "",err
+	}
+	//fmt.Printf("%s", out.String()) //输出执行结果
+	return out.String(),err
+}
+
+func CmdexecIostat(disk string) ([]string,error){
+	cmdOut,err :=Cmdexec("iostat -d "+disk)
+	if err != nil{
+		return nil,err
+	}
+	cmdOuts := strings.Split(cmdOut,"\n")
+	if len(cmdOuts) >1 {
+		val := cmdOuts[2]
+		val = strings.TrimSpace(val)
+		reg := regexp.MustCompile(`[ ]+`)
+		val = reg.ReplaceAllString(val, " ")
+		log.Println(val)
+		vals := strings.Split(val, " ")
+		return vals,err
+	}else {
+		return nil,errors.New("cmdOuts len is not greater than 1!")
+	}
 }
