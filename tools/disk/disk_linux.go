@@ -9,7 +9,7 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/shirou/gopsutil/internal/common"
+	"../internal/common"
 )
 
 const (
@@ -272,7 +272,7 @@ func getFileSystems() ([]string, error) {
 	return ret, nil
 }
 
-func IOCounters() (map[string]IOCountersStat, error) {
+func IOCounters(names ...string) (map[string]IOCountersStat, error) {
 	filename := common.HostProc("diskstats")
 	lines, err := common.ReadLines(filename)
 	if err != nil {
@@ -288,6 +288,11 @@ func IOCounters() (map[string]IOCountersStat, error) {
 			continue
 		}
 		name := fields[2]
+
+		if len(names) > 0 && !common.StringsHas(names, name) {
+			continue
+		}
+
 		reads, err := strconv.ParseUint((fields[3]), 10, 64)
 		if err != nil {
 			return ret, err
@@ -328,6 +333,10 @@ func IOCounters() (map[string]IOCountersStat, error) {
 		if err != nil {
 			return ret, err
 		}
+		weightedIO, err := strconv.ParseUint((fields[13]), 10, 64)
+		if err != nil {
+			return ret, err
+		}
 		d := IOCountersStat{
 			ReadBytes:        rbytes * SectorSize,
 			WriteBytes:       wbytes * SectorSize,
@@ -339,6 +348,7 @@ func IOCounters() (map[string]IOCountersStat, error) {
 			WriteTime:        wtime,
 			IopsInProgress:   iopsInProgress,
 			IoTime:           iotime,
+			WeightedIO:       weightedIO,
 		}
 		if d == empty {
 			continue

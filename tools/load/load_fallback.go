@@ -1,8 +1,8 @@
-// +build !darwin,!linux,!freebsd,!windows
+// +build !darwin,!linux,!freebsd,!openbsd,!windows
 
 package load
 
-import "../common"
+import "../internal/common"
 
 func Avg() (*AvgStat, error) {
 	return nil, common.ErrNotImplementedError

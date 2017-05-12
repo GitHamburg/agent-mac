@@ -1,8 +1,8 @@
-// +build !darwin,!linux,!freebsd,!windows
+// +build !darwin,!linux,!freebsd,!openbsd,!windows
 
 package net
 
-import "../common"
+import "../internal/common"
 
 func IOCounters(pernic bool) ([]IOCountersStat, error) {
 	return []IOCountersStat{}, common.ErrNotImplementedError
@@ -17,5 +17,9 @@ func ProtoCounters(protocols []string) ([]ProtoCountersStat, error) {
 }
 
 func Connections(kind string) ([]ConnectionStat, error) {
+	return []ConnectionStat{}, common.ErrNotImplementedError
+}
+
+func ConnectionsMax(kind string, max int) ([]ConnectionStat, error) {
 	return []ConnectionStat{}, common.ErrNotImplementedError
 }

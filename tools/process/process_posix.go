@@ -1,16 +1,14 @@
-// +build linux freebsd darwin
+// +build linux freebsd openbsd darwin
 
 package process
 
 import (
 	"os"
-	"os/exec"
 	"os/user"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"syscall"
-
-	"../common"
 )
 
 // POSIX
@@ -31,15 +29,24 @@ func getTerminalMap() (map[uint64]string, error) {
 		}
 	}
 
+	var ptsnames []string
 	ptsd, err := os.Open("/dev/pts")
 	if err != nil {
-		return nil, err
+		ptsnames, _ = filepath.Glob("/dev/ttyp*")
+		if ptsnames == nil {
+			return nil, err
+		}
 	}
 	defer ptsd.Close()
 
-	ptsnames, err := ptsd.Readdirnames(-1)
-	for _, ptsname := range ptsnames {
-		termfiles = append(termfiles, "/dev/pts/"+ptsname)
+	if ptsnames == nil {
+		defer ptsd.Close()
+		ptsnames, err = ptsd.Readdirnames(-1)
+		for _, ptsname := range ptsnames {
+			termfiles = append(termfiles, "/dev/pts/"+ptsname)
+		}
+	} else {
+		termfiles = ptsnames
 	}
 
 	for _, name := range termfiles {
@@ -56,28 +63,12 @@ func getTerminalMap() (map[uint64]string, error) {
 // SendSignal sends a syscall.Signal to the process.
 // Currently, SIGSTOP, SIGCONT, SIGTERM and SIGKILL are supported.
 func (p *Process) SendSignal(sig syscall.Signal) error {
-	sigAsStr := "INT"
-	switch sig {
-	case syscall.SIGSTOP:
-		sigAsStr = "STOP"
-	case syscall.SIGCONT:
-		sigAsStr = "CONT"
-	case syscall.SIGTERM:
-		sigAsStr = "TERM"
-	case syscall.SIGKILL:
-		sigAsStr = "KILL"
-	}
-
-	kill, err := exec.LookPath("kill")
+	process, err := os.FindProcess(int(p.Pid))
 	if err != nil {
 		return err
 	}
-	cmd := exec.Command(kill, "-s", sigAsStr, strconv.Itoa(int(p.Pid)))
-	cmd.Stderr = os.Stderr
-	if err := cmd.Start(); err != nil {
-		return err
-	}
-	err = common.WaitTimeout(cmd, common.Timeout)
+
+	err = process.Signal(sig)
 	if err != nil {
 		return err
 	}

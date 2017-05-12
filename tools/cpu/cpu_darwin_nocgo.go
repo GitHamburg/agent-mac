@@ -3,7 +3,7 @@
 
 package cpu
 
-import "../common"
+import "../internal/common"
 
 func perCPUTimes() ([]TimesStat, error) {
 	return []TimesStat{}, common.ErrNotImplementedError

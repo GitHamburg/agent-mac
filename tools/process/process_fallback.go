@@ -1,4 +1,4 @@
-// +build !darwin,!linux,!freebsd,!windows
+// +build !darwin,!linux,!freebsd,!openbsd,!windows
 
 package process
 
@@ -6,7 +6,7 @@ import (
 	"syscall"
 
 	"../cpu"
-	"../common"
+	"../internal/common"
 	"../net"
 )
 

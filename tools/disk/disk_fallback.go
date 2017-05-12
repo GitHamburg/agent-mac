@@ -1,10 +1,10 @@
-// +build !darwin,!linux,!freebsd,!windows
+// +build !darwin,!linux,!freebsd,!openbsd,!windows
 
 package disk
 
-import "../common"
+import "../internal/common"
 
-func IOCounters() (map[string]IOCountersStat, error) {
+func IOCounters(names ...string) (map[string]IOCountersStat, error) {
 	return nil, common.ErrNotImplementedError
 }
 

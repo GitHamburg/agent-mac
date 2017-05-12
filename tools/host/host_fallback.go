@@ -1,8 +1,8 @@
-// +build !darwin,!linux,!freebsd,!windows
+// +build !darwin,!linux,!freebsd,!openbsd,!solaris,!windows
 
 package host
 
-import "../common"
+import "../internal/common"
 
 func Info() (*InfoStat, error) {
 	return nil, common.ErrNotImplementedError

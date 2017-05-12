@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"../common"
+	"../internal/common"
 )
 
 func Avg() (*AvgStat, error) {

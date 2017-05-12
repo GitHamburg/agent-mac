@@ -7,7 +7,7 @@ import (
 	"syscall"
 	"unsafe"
 
-	"../common"
+	"../internal/common"
 )
 
 func Partitions(all bool) ([]PartitionStat, error) {
@@ -85,10 +85,6 @@ func Partitions(all bool) ([]PartitionStat, error) {
 	}
 
 	return ret, nil
-}
-
-func IOCounters() (map[string]IOCountersStat, error) {
-	return nil, common.ErrNotImplementedError
 }
 
 func Getfsstat(buf []Statfs_t, flags int) (n int, err error) {

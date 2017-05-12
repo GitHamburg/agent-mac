@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 
 	"../cpu"
-	"../common"
+	"../internal/common"
 )
 
 // GetDockerStat returns a list of Docker basic stats.

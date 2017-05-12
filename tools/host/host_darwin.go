@@ -14,7 +14,7 @@ import (
 	"time"
 	"unsafe"
 
-	"../common"
+	"../internal/common"
 	"../process"
 	"log"
 	"regexp"
@@ -35,12 +35,19 @@ func Info() (*InfoStat, error) {
 		ret.Hostname = hostname
 	}
 
-	platform, family, pver, version, err := PlatformInformation()
+	uname, err := exec.LookPath("uname")
+	if err == nil {
+		out, err := invoke.Command(uname, "-r")
+		if err == nil {
+			ret.KernelVersion = strings.ToLower(strings.TrimSpace(string(out)))
+		}
+	}
+
+	platform, family, pver, err := PlatformInformation()
 	if err == nil {
 		ret.Platform = platform
 		ret.PlatformFamily = family
 		ret.PlatformVersion = pver
-		ret.KernelVersion = version
 	}
 
 	system, role, err := Virtualization()
@@ -62,13 +69,16 @@ func Info() (*InfoStat, error) {
 
 	values, err := common.DoSysctrl("kern.uuid")
 	if err == nil && len(values) == 1 && values[0] != "" {
-		ret.HostID = values[0]
+		ret.HostID = strings.ToLower(values[0])
 	}
 
 	return ret, nil
 }
 
 func BootTime() (uint64, error) {
+	if cachedBootTime != 0 {
+		return cachedBootTime, nil
+	}
 	values, err := common.DoSysctrl("kern.boottime")
 	if err != nil {
 		return 0, err
@@ -79,37 +89,13 @@ func BootTime() (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
+	cachedBootTime = uint64(boottime)
 
-	return uint64(boottime), nil
+	return cachedBootTime, nil
 }
 
 func uptime(boot uint64) uint64 {
 	return uint64(time.Now().Unix()) - boot
-}
-
-func SystemUptime() (days, hours, mins int64, err error) {
-	var  up_time uint64
-	up_time, err = Uptime()
-	if err != nil {
-		return
-	}
-
-
-	secStr := strconv.FormatInt(int64(up_time), 10)
-	var secF float64
-	secF, err = strconv.ParseFloat(secStr, 64)
-	if err != nil {
-		return
-	}
-
-	minTotal := secF / 60.0
-	hourTotal := minTotal / 60.0
-
-	days = int64(hourTotal / 24.0)
-	hours = int64(hourTotal) - days*24
-	mins = int64(minTotal) - (days * 60 * 24) - (hours * 60)
-
-	return
 }
 
 func Uptime() (uint64, error) {
@@ -128,6 +114,7 @@ func Users() ([]UserStat, error) {
 	if err != nil {
 		return ret, err
 	}
+	defer file.Close()
 
 	buf, err := ioutil.ReadAll(file)
 	if err != nil {
@@ -163,19 +150,18 @@ func Users() ([]UserStat, error) {
 
 }
 
-func PlatformInformation() (string, string, string, string, error) {
+func PlatformInformation() (string, string, string, error) {
 	platform := ""
 	family := ""
-	version := ""
 	pver := ""
 
 	sw_vers, err := exec.LookPath("sw_vers")
 	if err != nil {
-		return "", "", "", "", err
+		return "", "", "", err
 	}
 	uname, err := exec.LookPath("uname")
 	if err != nil {
-		return "", "", "", "", err
+		return "", "", "", err
 	}
 
 	out, err := invoke.Command(uname, "-s")
@@ -188,12 +174,7 @@ func PlatformInformation() (string, string, string, string, error) {
 		pver = strings.ToLower(strings.TrimSpace(string(out)))
 	}
 
-	out, err = invoke.Command(uname, "-r")
-	if err == nil {
-		version = strings.ToLower(strings.TrimSpace(string(out)))
-	}
-
-	return platform, family, pver, version, nil
+	return platform, family, pver, nil
 }
 
 func Virtualization() (string, string, error) {
@@ -202,6 +183,7 @@ func Virtualization() (string, string, error) {
 
 	return system, role, nil
 }
+
 
 func Cmdexec(command string) (string,error) {
 	cmd := exec.Command("/bin/sh", "-c", command) //调用Command函数
@@ -232,4 +214,29 @@ func CmdexecIostat(disk string) ([]string,error){
 	}else {
 		return nil,errors.New("cmdOuts len is not greater than 1!")
 	}
+}
+
+func SystemUptime() (days, hours, mins int64, err error) {
+	var  up_time uint64
+	up_time, err = Uptime()
+	if err != nil {
+		return
+	}
+
+
+	secStr := strconv.FormatInt(int64(up_time), 10)
+	var secF float64
+	secF, err = strconv.ParseFloat(secStr, 64)
+	if err != nil {
+		return
+	}
+
+	minTotal := secF / 60.0
+	hourTotal := minTotal / 60.0
+
+	days = int64(hourTotal / 24.0)
+	hours = int64(hourTotal) - days*24
+	mins = int64(minTotal) - (days * 60 * 24) - (hours * 60)
+
+	return
 }
