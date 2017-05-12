@@ -4,8 +4,9 @@ falcon-agent for mac
 This is a mac monitor agent. Just like zabbix-agent and tcollector.
 
 ## Breaking Changes! golang 1.8 is required
-golang 1.8 is required to build.
-support IOCountersStat in macOs.
+
+- golang 1.8 is required to build.
+- support IOCountersStat in macOs.
 
 ## Installation
 
