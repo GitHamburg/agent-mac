@@ -7,6 +7,7 @@ This is a mac monitor agent. Just like zabbix-agent and tcollector.
 
 - golang 1.8 is required to build.
 - support IOCountersStat in macOs.
+- fully support Disk IO Stats in macOs.
 
 ## Installation
 
