@@ -3,7 +3,7 @@ package disk
 import (
 	"encoding/json"
 
-	"../common"
+	"../internal/common"
 )
 
 var invoke common.Invoker
@@ -43,6 +43,7 @@ type IOCountersStat struct {
 	WriteTime        uint64 `json:"writeTime"`
 	IopsInProgress   uint64 `json:"iopsInProgress"`
 	IoTime           uint64 `json:"ioTime"`
+	WeightedIO       uint64 `json:"weightedIO"`
 	Name             string `json:"name"`
 	SerialNumber     string `json:"serialNumber"`
 }

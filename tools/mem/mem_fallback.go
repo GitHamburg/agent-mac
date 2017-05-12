@@ -1,8 +1,8 @@
-// +build !darwin,!linux,!freebsd,!windows
+// +build !darwin,!linux,!freebsd,!openbsd,!solaris,!windows
 
 package mem
 
-import "../common"
+import "../internal/common"
 
 func VirtualMemory() (*VirtualMemoryStat, error) {
 	return nil, common.ErrNotImplementedError

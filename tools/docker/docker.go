@@ -3,7 +3,7 @@ package docker
 import (
 	"errors"
 
-	"../common"
+	"../internal/common"
 )
 
 var ErrDockerNotAvailable = errors.New("docker not available")

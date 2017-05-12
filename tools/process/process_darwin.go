@@ -14,7 +14,7 @@ import (
 	"unsafe"
 
 	"../cpu"
-	"../common"
+	"../internal/common"
 	"../net"
 )
 
@@ -64,6 +64,10 @@ func Pids() ([]int32, error) {
 
 func (p *Process) Ppid() (int32, error) {
 	r, err := callPs("ppid", p.Pid, false)
+	if err != nil {
+		return 0, err
+	}
+
 	v, err := strconv.Atoi(r[0][0])
 	if err != nil {
 		return 0, err
@@ -80,7 +84,34 @@ func (p *Process) Name() (string, error) {
 	return common.IntToString(k.Proc.P_comm[:]), nil
 }
 func (p *Process) Exe() (string, error) {
-	return "", common.ErrNotImplementedError
+	lsof_bin, err := exec.LookPath("lsof")
+	if err != nil {
+		return "", err
+	}
+
+	awk_bin, err := exec.LookPath("awk")
+	if err != nil {
+		return "", err
+	}
+
+	sed_bin, err := exec.LookPath("sed")
+	if err != nil {
+		return "", err
+	}
+
+	lsof := exec.Command(lsof_bin, "-p", strconv.Itoa(int(p.Pid)), "-Fn")
+	awk := exec.Command(awk_bin, "NR==3{print}")
+	sed := exec.Command(sed_bin, "s/n\\//\\//")
+
+	output, _, err := common.Pipeline(lsof, awk, sed)
+
+	if err != nil {
+		return "", err
+	}
+
+	ret := strings.TrimSpace(string(output))
+
+	return ret, nil
 }
 
 // Cmdline returns the command line arguments of the process as a string with
@@ -121,7 +152,7 @@ func (p *Process) CreateTime() (int64, error) {
 		elapsedDurations = append(elapsedDurations, time.Duration(p))
 	}
 
-	var elapsed time.Duration = time.Duration(elapsedDurations[0]) * time.Second
+	var elapsed = time.Duration(elapsedDurations[0]) * time.Second
 	if len(elapsedDurations) > 1 {
 		elapsed += time.Duration(elapsedDurations[1]) * time.Minute
 	}

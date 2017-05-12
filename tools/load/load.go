@@ -3,7 +3,7 @@ package load
 import (
 	"encoding/json"
 
-	"../common"
+	"../internal/common"
 )
 
 var invoke common.Invoker
