@@ -2,9 +2,9 @@ package plugins
 
 import (
 	"bytes"
-	"encoding/json"
+	//"encoding/json"
 	"../g"
-	"github.com/open-falcon/common/model"
+	//"github.com/open-falcon/common/model"
 	"github.com/toolkits/file"
 	"github.com/toolkits/sys"
 	"log"
@@ -47,7 +47,11 @@ func (this *PluginScheduler) Stop() {
 func PluginRun(plugin *Plugin) {
 
 	timeout := plugin.Cycle*1000 - 500
+	log.Println("plugin timeout:", timeout)
+	log.Println("plugin dir path:", g.Config().Plugin.Dir)
+	log.Println("plugin file path:", plugin.FilePath)
 	fpath := filepath.Join(g.Config().Plugin.Dir, plugin.FilePath)
+	log.Println("plugin path:", fpath)
 
 	if !file.IsExist(fpath) {
 		log.Println("no such plugin:", fpath)
@@ -94,21 +98,26 @@ func PluginRun(plugin *Plugin) {
 		return
 	}
 
-	// exec successfully
-	data := stdout.Bytes()
-	if len(data) == 0 {
-		if debug {
-			log.Println("[DEBUG] stdout of", fpath, "is blank")
-		}
-		return
-	}
+	//// exec successfully
+	//data := stdout.Bytes()
+	//if len(data) == 0 {
+	//	if debug {
+	//		log.Println("[DEBUG] stdout of", fpath, "is blank")
+	//	}
+	//	return
+	//}
+	//
+	//var metrics []*model.MetricValue
+	//err = json.Unmarshal(data, &metrics)
+	//if err != nil {
+	//	log.Printf("[ERROR] json.Unmarshal stdout of %s fail. error:%s stdout: \n%s\n", fpath, err, stdout.String())
+	//	return
+	//}
+	//
+	//g.SendToTransfer(metrics)
 
-	var metrics []*model.MetricValue
-	err = json.Unmarshal(data, &metrics)
-	if err != nil {
-		log.Printf("[ERROR] json.Unmarshal stdout of %s fail. error:%s stdout: \n%s\n", fpath, err, stdout.String())
-		return
-	}
-
-	g.SendToTransfer(metrics)
+	//err := cmd.Run()
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
 }

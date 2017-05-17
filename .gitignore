@@ -10,3 +10,5 @@
 *.idea
 /gitversion
 
+/config/port-check.list
+/plugin/check/60_port-check.sh
