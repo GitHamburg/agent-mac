@@ -1,0 +1,52 @@
+#!/bin/bash
+
+base_path="user path"
+date >> "${base_path}"/var/port-check.run.log
+
+ts=`date +%s`;
+check_file="${base_path}/config/port-check.list"
+endpoint="mac ip"
+
+if [[ ! -a $check_file ]]; then
+	exit
+fi
+
+output="["
+for v in $(cat $check_file| tr -d " ")
+do
+	project=$(echo $v | awk -F, '{print $1}')
+	ip=$(echo $v | awk -F, '{print $2}')
+	port=$(echo $v | awk -F, '{print $3}')
+	protocol=$(echo $v | awk -F, '{print $4}')
+	name=${ip}:${port}:${protocol}
+	class=$(echo $v | awk -F, '{print $5}')
+
+	if [ "$class" == "unstable" ]; then
+		class="unstable"
+	else
+		class="stable"
+	fi
+
+	if [ "$protocol" == "udp" ]; then
+		result=$(/usr/bin/nc -z -w 2 -u $ip $port 1>/dev/null 2>/dev/null)
+	else
+		result=$(/usr/bin/nc -z -w 4 $ip $port 1>/dev/null 2>/dev/null)
+	fi
+
+	check_status=$?
+
+	output=$output$(echo "{ \"metric\": \"port-check\", \"endpoint\": \"$endpoint\", \"timestamp\": $ts,\"step\": 60,\"value\": \"$check_status\", \"counterType\": \"GAUGE\",\"tags\": \"project=$project,module=$name,method=status,class=$class\"}, ")\\n
+
+	result=`curl -X POST -d "[{ \"metric\": \"port-check\", \"endpoint\": \"$endpoint\", \"timestamp\": $ts,\"step\": 60,\"value\": \"$check_status\", \"counterType\": \"GAUGE\",\"tags\": \"project=$project,module=$name,method=status,class=$class\"}]" http://127.0.0.1:1988/v1/push`
+
+echo $result >> "${base_path}"/var/port-check.run.log
+
+	sleep 0.1
+
+done
+output=$output" {} "
+output=$output" ]"
+
+echo -e $output
+
+date >> "${base_path}"/var/port-check.run.log

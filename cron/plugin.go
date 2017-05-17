@@ -22,6 +22,7 @@ func SyncMinePlugins() {
 		return
 	}
 
+	println("syncMinePlugins()")
 	go syncMinePlugins()
 }
 

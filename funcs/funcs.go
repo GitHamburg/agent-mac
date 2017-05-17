@@ -26,13 +26,34 @@ func BuildMappers() {
 				LoadAvgMetrics,
 				MemMetrics,
 				DiskIOMetrics,
-				NetstatMetrics,
+				//NetstatMetrics,
+				//ProcMetrics,
+				//UdpMetrics,
 			},
 			Interval: interval,
 		},
 		FuncsAndInterval{
 			Fs: []func() []*model.MetricValue{
 				DeviceMetrics,
+			},
+			Interval: interval,
+		},
+		FuncsAndInterval{
+			Fs: []func() []*model.MetricValue{
+				PortMetrics,
+				//SocketStatSummaryMetrics,
+			},
+			Interval: interval,
+		},
+		FuncsAndInterval{
+			Fs: []func() []*model.MetricValue{
+				DuMetrics,
+			},
+			Interval: interval,
+		},
+		FuncsAndInterval{
+			Fs: []func() []*model.MetricValue{
+				UrlMetrics,
 			},
 			Interval: interval,
 		},
