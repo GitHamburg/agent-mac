@@ -46,19 +46,25 @@ func (this *PluginScheduler) Stop() {
 
 func PluginRun(plugin *Plugin) {
 
+	debug := g.Config().Debug
+
 	timeout := plugin.Cycle*1000 - 500
-	log.Println("plugin timeout:", timeout)
-	log.Println("plugin dir path:", g.Config().Plugin.Dir)
-	log.Println("plugin file path:", plugin.FilePath)
+	if debug {
+		log.Println("plugin timeout:", timeout)
+		log.Println("plugin dir path:", g.Config().Plugin.Dir)
+		log.Println("plugin file path:", plugin.FilePath)
+	}
 	fpath := filepath.Join(g.Config().Plugin.Dir, plugin.FilePath)
-	log.Println("plugin path:", fpath)
+	if debug {
+		log.Println("plugin path:", fpath)
+	}
 
 	if !file.IsExist(fpath) {
 		log.Println("no such plugin:", fpath)
 		return
 	}
 
-	debug := g.Config().Debug
+
 	if debug {
 		log.Println(fpath, "running...")
 	}
