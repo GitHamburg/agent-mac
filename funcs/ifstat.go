@@ -5,6 +5,7 @@ import (
 	"github.com/open-falcon/common/model"
 	"../tools/net"
 	"log"
+	"strings"
 )
 
 func NetMetrics() []*model.MetricValue {
@@ -23,6 +24,21 @@ func CoreNetMetrics(ifacePrefix []string) []*model.MetricValue {
 	ret := make([]*model.MetricValue, cnt*23)
 
 	for idx, netIf := range netIfs {
+
+		if len(ifacePrefix) > 0 {
+			found := false
+			for _, prefix := range ifacePrefix {
+				if strings.HasPrefix(netIf.Name, prefix) {
+					found = true
+					break
+				}
+			}
+
+			if !found {
+				continue
+			}
+		}
+
 		iface := "iface=" + netIf.Name
 		ret[idx*23+0] = CounterValue("net.if.in.bytes", netIf.BytesRecv, iface)
 		ret[idx*23+1] = CounterValue("net.if.in.packets", netIf.PacketsRecv, iface)

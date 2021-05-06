@@ -187,9 +187,10 @@ func IOCounters(pernic bool) ([]IOCountersStat, error) {
 
 	ifaceUsage := newMapInterfaceNameUsage(nsInterfaces)
 	notTruncated := ifaceUsage.notTruncated()
-	ret = make([]IOCountersStat, len(notTruncated))
+
 
 	if !ifaceUsage.isTruncated() {
+		ret = make([]IOCountersStat, len(notTruncated))
 		// no truncated interface name, return stats of all interface with <Link#...>
 		for index := range nsInterfaces {
 			if nsInterfaces[index].linkID != nil {
@@ -198,6 +199,7 @@ func IOCounters(pernic bool) ([]IOCountersStat, error) {
 			}
 		}
 	} else {
+		ret = make([]IOCountersStat, len(nsInterfaces))
 		// duplicated interface, list all interfaces
 		ifconfig, err := exec.LookPath("/sbin/ifconfig")
 		if err != nil {
